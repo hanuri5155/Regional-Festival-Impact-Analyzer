@@ -150,6 +150,8 @@ for _, event in events.iterrows():
     event_name = event.get('title', '제목 없음')
     contentid = event.get('contentid', 'Unknown ID')
     firstimage = event.get('firstimage', '')
+    mapx = event.get('mapx')
+    mapy = event.get('mapy')
     
     if pd.isna(start_date) or pd.isna(end_date):
         logger.warning(f"축제 '{event_name}'의 시작일 또는 종료일이 유효하지 않습니다.")
@@ -184,7 +186,10 @@ for _, event in events.iterrows():
             'eventenddate': event['eventenddate'].strftime('%Y%m%d'),
             'contentid': contentid,
             'activation_rate': activation_rate_str,
-            'firstimage': firstimage
+            'firstimage': firstimage,
+            'mapx': mapx,
+            'mapy': mapy,
+
         })
     else:
         logger.warning(f"축제 '{event_name}' ({district_name})의 데이터가 부족합니다.")

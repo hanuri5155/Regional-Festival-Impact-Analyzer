@@ -194,4 +194,4 @@ const fetchVisitorDataAndStore = async () => {
     }
 };
 
-module.exports = { connect, fetchEventDataAndStore, fetchVisitorDataAndStore };
+module.exports = { connect, fetchEventDataAndStore, fetchVisitorDataAndStore, EventModel, VisitorModel };

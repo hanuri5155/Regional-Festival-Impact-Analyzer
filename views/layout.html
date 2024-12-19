@@ -2,73 +2,197 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>{{ title }}</title>
-    <meta name="viewport" content="width=device-width, user-scalable=no">
+    <title>축제 지도</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Naver Maps API -->
     <script type="text/javascript" src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=874mtpac1p&submodules=panorama,geocoder,drawing,visualization"></script>
+    <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="/main.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- main.css 파일이 있다면 public/main.css에 두고 아래 주석 해제 -->
+    <!-- <link rel="stylesheet" href="/main.css"> -->
+
     <style>
         #map {
             width: 100%;
             height: 100vh;
         }
+        .info-window {
+            max-width: 500px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            border-radius: 15px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+            background-color: #ffffff;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .info-title {
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333333;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .image-section {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .image-section img {
+            width: 360px; 
+            height: auto;
+            border-radius: 10px; 
+            margin: 0 auto;
+            display: block;
+        }
+        .data-row {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .info-section-title {
+            font-weight: bold;
+            font-size: 16px;
+            color: #444444;
+            margin-bottom: 5px;
+        }
+        .info-block {
+            flex: 1;
+        }
+        .center-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .activation-chart, .visitor-count {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            margin: 0 auto;
+            background-color: #f5f5f5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.1);
+        }
+        .activation-text, .count-text {
+            position: absolute;
+            text-align: center;
+            font-size: 13px;
+            color: #333333;
+        }
+
+        @media (max-width: 600px) {
+            .info-window {
+                max-width: 90%;
+                padding: 15px;
+            }
+            .data-row {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .image-section img {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
-   
     <div id="map"></div>
-
     <script>
-        $(document).ready(function() {
-            var defaultCenter = new naver.maps.LatLng(36.0, 127.5); // 대한민국 중간 정도 좌표
-            var map = new naver.maps.Map('map', {
+        // 여기서 {{ results }}는 백엔드에서 JSON.stringify()로 변환한 문자열
+        // 이 문자열을 문자열 그대로 JS에 넣기 위해 작은따옴표로 감싼다.
+        const jsonString = '{{ results | safe }}';
+        // 이제 jsonString은 유효한 JSON 문자열이므로 parse 가능
+        const data = JSON.parse(jsonString);
+
+        function formatDate(dateStr) {
+            if (!dateStr || dateStr.length !== 8) return '날짜 정보 없음';
+            const year = dateStr.substring(0,4);
+            const month = parseInt(dateStr.substring(4,6),10);
+            const day = parseInt(dateStr.substring(6,8),10);
+            return `${year}년 ${month}월 ${day}일`;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const defaultCenter = new naver.maps.LatLng(36.0, 127.5);
+            const map = new naver.maps.Map('map', {
                 center: defaultCenter,
                 zoom: 7
             });
 
-            // MongoDB로부터 축제 데이터 가져오기
-            $.getJSON('/events', function(data) {
-                if (!Array.isArray(data)) {
-                    console.error('잘못된 데이터 형식:', data);
+            if (!Array.isArray(data)) {
+                console.error('잘못된 데이터 형식:', data);
+                return;
+            }
+
+            console.log(data);
+
+            data.forEach((item, index) => {
+                const lat = parseFloat(item.mapy);
+                const lng = parseFloat(item.mapx);
+
+                if (isNaN(lat) || isNaN(lng)) {
+                    console.warn(`유효하지 않은 좌표: ${item.title}`);
                     return;
                 }
 
-                data.forEach(function(event) {
-                    var lat = parseFloat(event.mapy);
-                    var lng = parseFloat(event.mapx);
-
-                    if (isNaN(lat) || isNaN(lng)) {
-                        console.warn(`유효하지 않은 좌표: ${event.title}`);
-                        return;
-                    }
-
-                    var position = new naver.maps.LatLng(lat, lng);
-                    var marker = new naver.maps.Marker({
-                        map: map,
-                        position: position,
-                        title: event.title
-                    });
-
-                    var contentString = `
-                        <div style="padding:10px;">
-                            <h4>${event.title}</h4>
-                            <p>${event.eventstartdate} ~ ${event.eventenddate}</p>
-                        </div>
-                    `;
-                    var infowindow = new naver.maps.InfoWindow({
-                        content: contentString
-                    });
-
-                    naver.maps.Event.addListener(marker, "click", function() {
-                        if (infowindow.getMap()) {
-                            infowindow.close();
-                        } else {
-                            infowindow.open(map, marker);
-                        }
-                    });
+                const position = new naver.maps.LatLng(lat, lng);
+                const marker = new naver.maps.Marker({
+                    map: map,
+                    position: position,
+                    title: item.title
                 });
-            }).fail(function(jqxhr, textStatus, error) {
-                console.error('이벤트 데이터 가져오기 실패:', textStatus, error);
+
+                const formattedStartDate = formatDate(item.eventstartdate);
+                const formattedEndDate = formatDate(item.eventenddate);
+                const activationRaw = item.activation_rate || 'N/A';
+
+                const contentString = `
+                    <div class="info-window">
+                        <div class="info-title">${item.title}</div>
+                        <div class="image-section">
+                            <img src="${item.firstimage}" alt="${item.title} 사진">
+                        </div>
+                        <div class="data-row">
+                            <div class="info-block">
+                                <div class="info-section-title">위치</div>
+                                <div>${item.addr1 || '위치 정보 없음'}</div>
+                            </div>
+                            <div class="info-block">
+                                <div class="info-section-title">축제일정</div>
+                                <div>${formattedStartDate} ~ ${formattedEndDate}</div>
+                            </div>
+                        </div>
+                        <div class="data-row">
+                            <div class="info-block center-content">
+                                <div class="info-section-title">활성화 정도</div>
+                                <div>${activationRaw}</div>
+                            </div>
+                            <div class="info-block center-content">
+                                <div class="info-section-title">방문자 수 예측</div>
+                                <div>${item.nextYearVisitors || 'N/A'}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                const infowindow = new naver.maps.InfoWindow({
+                    content: contentString
+                });
+
+                naver.maps.Event.addListener(marker, "click", () => {
+                    if (infowindow.getMap()) {
+                        infowindow.close();
+                    } else {
+                        infowindow.open(map, marker);
+                    }
+                });
             });
         });
     </script>
