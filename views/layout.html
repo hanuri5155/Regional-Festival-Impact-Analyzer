@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+{# <!DOCTYPE html>
 <html>
     <head>
         <meta charset="UTF-8">
@@ -300,5 +300,31 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
         </script>
+    </body>
+</html> #}
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>축제 지도</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- Naver Maps API -->
+        <script
+            type="text/javascript"
+            src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=874mtpac1p&submodules=panorama,geocoder,drawing,visualization"></script>
+        <!-- jQuery -->
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
+        <!-- Chart.js -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <!-- External CSS -->
+        <link rel="stylesheet" href="/styles.css">
+    </head>
+    <body>
+        <div id="map"></div>
+        <script>
+            const data = {{ results | safe }};
+        </script>
+        <script src="/script.js" defer></script>
     </body>
 </html>

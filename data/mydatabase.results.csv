@@ -68,7 +68,7 @@ _id,title,addr1,eventstartdate,eventenddate,contentid,activation_rate,firstimage
 6763d9e38581e2a8e434eedf,헬로메이커,부산광역시 기장군 기장읍 동부산관광6로 59,20240928,20240929,2560161,24.62%,http://tong.visitkorea.or.kr/cms/resource/84/3380084_image2_1.jpg,129.2127048692,35.2046063384
 6763d9e38581e2a8e434eee0,부산국제공연예술제,부산광역시 금정구 장전온천천로 48 (장전동),20240928,20240929,2558735,4.61%,http://tong.visitkorea.or.kr/cms/resource/83/2997883_image2_1.jpg,129.0893371356,35.2296540211
 6763d9e38581e2a8e434eee1,부산스토리텔링축제 [안녕한 사하],부산광역시 연제구 중앙대로 1217 (거제동),20241101,20241129,2557249,1.67%,http://tong.visitkorea.or.kr/cms/resource/85/3359785_image2_1.jpg,129.0793056029,35.1959020620
-6763d9e38581e2a8e434eee2,"영남춤축제 '춤,보고싶다'",부산광역시 부산진구 국악로 2,20240713,20240810,2503429,-2.40%,http://tong.visitkorea.or.kr/cms/resource/60/3332960_image2_1.jpg,129.0542528980,35.1714404510
+6763d9e38581e2a8e434eee2,영남춤축제 춤 보고싶다,부산광역시 부산진구 국악로 2,20240713,20240810,2503429,-2.40%,http://tong.visitkorea.or.kr/cms/resource/60/3332960_image2_1.jpg,129.0542528980,35.1714404510
 6763d9e38581e2a8e434eee3,피란수도 부산 문화유산 야행,부산광역시 중구 대청로 112 (대청동1가),20240816,20240817,2486085,10.54%,http://tong.visitkorea.or.kr/cms/resource/56/3334356_image2_1.png,129.0321900270,35.1027616225
 6763d9e38581e2a8e434eee4,라라라 페스티벌,부산광역시 금정구 장전온천천로 48 (장전동),20241018,20241020,2484237,-3.37%,http://tong.visitkorea.or.kr/cms/resource/03/3405703_image2_1.jpg,129.0893371356,35.2296540211
 6763d9e38581e2a8e434eee5,택슐랭,부산광역시 동구 중앙대로 210 (초량동),20240517,20240526,2438928,11.83%,http://tong.visitkorea.or.kr/cms/resource/67/3116067_image2_1.jpg,129.0408611560,35.1151853926
@@ -188,7 +188,7 @@ _id,title,addr1,eventstartdate,eventenddate,contentid,activation_rate,firstimage
 6763d9e38581e2a8e434ef57,제 24회 연기대첩제,세종특별자치시 연서면 용암리,20240504,20240504,2986345,23.52%,http://tong.visitkorea.or.kr/cms/resource/92/3115692_image2_1.jpg,127.2275170257,36.5998481351
 6763d9e38581e2a8e434ef58,금강청소년축제,세종특별자치시  시청대로 147,20240907,20240907,2935214,0.37%,http://tong.visitkorea.or.kr/cms/resource/53/3423953_image2_1.jpg,127.2875176644,36.4807128659
 6763d9e38581e2a8e434ef59,베어트리파크 단풍축제,세종특별자치시  신송로 217 베어트리파크,20241019,20241110,2865065,6.50%,http://tong.visitkorea.or.kr/cms/resource/17/3380117_image2_1.jpg,127.2101554814,36.6728227784
-6763d9e38581e2a8e434ef5a,베어트리파크 철쭉제 '봄과 철쭉',세종특별자치시  신송로 217 베어트리파크,20240413,20240506,2650445,2.00%,http://tong.visitkorea.or.kr/cms/resource/49/2954849_image2_1.jpg,127.2101554814,36.6728227784
+6763d9e38581e2a8e434ef5a,베어트리파크 철쭉제 봄과 철쭉,세종특별자치시  신송로 217 베어트리파크,20240413,20240506,2650445,2.00%,http://tong.visitkorea.or.kr/cms/resource/49/2954849_image2_1.jpg,127.2101554814,36.6728227784
 6763d9e38581e2a8e434ef5b,세종축제,세종특별자치시  호수공원길 155,20241009,20241012,1849007,8.40%,http://tong.visitkorea.or.kr/cms/resource/38/3389438_image2_1.JPG,127.2750155705,36.4967663593
 6763d9e38581e2a8e434ef5c,대덕힐링뮤직콘서트,대전광역시 대덕구 동춘당로 80 (송촌동),20241012,20241012,3363436,16.39%,http://tong.visitkorea.or.kr/cms/resource/32/3363432_image2_1.jpg,127.4412987135,36.3648816382
 6763d9e38581e2a8e434ef5d,테미 별빛산책,대전광역시 중구 보문로205번길 13 (대흥동),20240802,20240803,3337273,7.71%,http://tong.visitkorea.or.kr/cms/resource/65/3337265_image2_1.jpg,127.4230876502,36.3207891354
@@ -376,7 +376,7 @@ _id,title,addr1,eventstartdate,eventenddate,contentid,activation_rate,firstimage
 6763d9e38581e2a8e434f013,BEE PLACE <꿀벌의 Bee행 - 꿀벌아 돌아와!>,서울특별시 중구 을지로 지하12 (을지로1가),20240819,20240820,3347800,-4.85%,http://tong.visitkorea.or.kr/cms/resource/98/3347798_image2_1.jpg,126.9787960237,37.5655015943
 6763d9e38581e2a8e434f014,한국-캐나다 무용 공동제작 프로젝트 〈BODY (몸)〉,서울특별시 마포구 백범로 35 (신수동),20240901,20250307,3345589,0.37%,http://tong.visitkorea.or.kr/cms/resource/78/3345578_image2_1.png,126.9379473591,37.5516830237
 6763d9e38581e2a8e434f015,무비스파크 필름 페스티벌 (Moviespark Film Festival),서울특별시 마포구 동교로22길 14 (서교동),20240726,20240912,3343440,-3.66%,http://tong.visitkorea.or.kr/cms/resource/32/3343432_image2_1.jpg,126.9188323376,37.5551295032
-6763d9e38581e2a8e434f016,서울숲 푸른밤 축제 '별 헤는 서울숲',서울특별시 성동구 뚝섬로 273 (성수동1가),20240817,20240824,3341988,-6.27%,http://tong.visitkorea.or.kr/cms/resource/24/3341924_image2_1.jpg,127.0418131384,37.5431247707
+6763d9e38581e2a8e434f016,서울숲 푸른밤 축제 별 헤는 서울숲,서울특별시 성동구 뚝섬로 273 (성수동1가),20240817,20240824,3341988,-6.27%,http://tong.visitkorea.or.kr/cms/resource/24/3341924_image2_1.jpg,127.0418131384,37.5431247707
 6763d9e38581e2a8e434f017,청춘대로,서울특별시 광진구 능동로 216 (능동),20240926,20240928,3340159,12.60%,http://tong.visitkorea.or.kr/cms/resource/51/3340151_image2_1.jpg,127.0762792676,37.5493552228
 6763d9e38581e2a8e434f018,스니커콘 서울 (Sneaker Con SEOUL),서울특별시 성동구 연무장15길 11 (성수동2가),20241004,20241006,3338253,9.64%,http://tong.visitkorea.or.kr/cms/resource/52/3338252_image2_1.jpg,127.0594809973,37.5423085165
 6763d9e38581e2a8e434f019,사와 랑은 물에 산다,서울특별시 종로구 동숭길 74 (동숭동),20240724,20240725,3333908,3.09%,http://tong.visitkorea.or.kr/cms/resource/96/3333896_image2_1.png,127.0043182417,37.5815862941

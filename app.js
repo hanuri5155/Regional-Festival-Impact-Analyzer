@@ -43,7 +43,6 @@ app.get('/', async (req, res) => {
     }
 });
 
-
 // 404 처리
 app.use((req, res, next) => {
   const error = new Error(`${req.method} ${req.url} 라우터가 존재하지 않습니다.`);
