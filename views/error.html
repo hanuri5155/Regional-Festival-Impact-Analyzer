@@ -1,0 +1,7 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<h1>{{ message }}</h1> <!-- 오류 메시지 출력 -->
+<h2>{{ error.status }}</h2> <!-- HTTP 상태 코드 -->
+<pre>{{ error.stack }}</pre> <!-- 에러 스택 (개발 환경에서만 표시) -->
+{% endblock %}
