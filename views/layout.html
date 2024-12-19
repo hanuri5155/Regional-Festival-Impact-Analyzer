@@ -96,6 +96,18 @@
                 font-size: 12px; /* 글씨 크기 축소 */
                 color: #333333;
             }
+            .close-button {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                font-size: 18px;
+                font-weight: bold;
+                color: #444444;
+                cursor: pointer;
+            }
+            .close-button:hover {
+                color: #ff0000;
+            }
             @media(max-width: 600px) {
                 .info-window {
                     max-width: 90%; /* 모바일에서는 너비를 90%로 조정 */
@@ -114,191 +126,179 @@
     <body>
         <div id="map"></div>
         <script>
-            // 백엔드에서 JSON.stringify()로 변환한 데이터를 안전하게 JavaScript에 전달
-            const data = {{ results | safe }};
-            function formatDate(dateStr) {
-                if (! dateStr || dateStr.length !== 8) 
-                    return '날짜 정보 없음';
-                
-                const year = dateStr.substring(0, 4);
-                const month = parseInt(dateStr.substring(4, 6), 10);
-                const day = parseInt(dateStr.substring(6, 8), 10);
-                return `${year}년 ${month}월 ${day}일`;
+        const data = {{ results | safe }};
+function formatDate(dateStr) {
+    if (!dateStr || dateStr.length !== 8) return '날짜 정보 없음';
+
+    const year = dateStr.substring(0, 4);
+    const month = parseInt(dateStr.substring(4, 6), 10);
+    const day = parseInt(dateStr.substring(6, 8), 10);
+    return `${year}년 ${month}월 ${day}일`;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const defaultCenter = new naver.maps.LatLng(36.0, 127.5);
+    const map = new naver.maps.Map('map', {
+        center: defaultCenter,
+        zoom: 7
+    });
+
+    if (!Array.isArray(data)) {
+        console.error('잘못된 데이터 형식:', data);
+        return;
+    }
+
+    console.log(data);
+
+    let activeInfoWindow = null; // 현재 열려 있는 InfoWindow를 추적
+
+    data.forEach((item, index) => {
+        const lat = parseFloat(item.mapy);
+        const lng = parseFloat(item.mapx);
+
+        if (isNaN(lat) || isNaN(lng)) {
+            console.warn(`유효하지 않은 좌표: ${item.title}`);
+            return;
+        }
+
+        const position = new naver.maps.LatLng(lat, lng);
+        const marker = new naver.maps.Marker({
+            map: map,
+            position: position,
+            title: item.title
+        });
+
+        const formattedStartDate = formatDate(item.eventstartdate);
+        const formattedEndDate = formatDate(item.eventenddate);
+        const activationRaw = parseFloat(item.activation_rate) || 0;
+        const visitorPrediction = item.nextYearVisitors || 'N/A';
+
+        const contentString = `
+            <div class="info-window">
+                <div class="info-title">
+                    ${item.title}
+                    <span class="close-button" onclick="closeActiveInfoWindow()">&#10005;</span>
+                </div>
+                <div class="image-section">
+                    <img src="${item.firstimage}" alt="${item.title} 사진">
+                </div>
+                <div class="data-row">
+                    <div class="info-block">
+                        <div class="info-section-title">위치</div>
+                        <div>${item.addr1 || '위치 정보 없음'}</div>
+                    </div>
+                    <div class="info-block">
+                        <div class="info-section-title">축제일정</div>
+                        <div>${formattedStartDate} ~ ${formattedEndDate}</div>
+                    </div>
+                </div>
+                <div class="data-row">
+                    <div class="info-block center-content">
+                        <div class="info-section-title">지역 활성화 정도</div>
+                        <canvas id="activation-chart-${index}" width="100" height="100"></canvas>
+                    </div>
+                    <div class="info-block center-content">
+                        <div class="info-section-title">방문자 수 예측</div>
+                        <div>${visitorPrediction}</div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        const infowindow = new naver.maps.InfoWindow({
+            content: contentString,
+            anchorSkew: true,
+            pixelOffset: new naver.maps.Point(0, 50)
+        });
+
+        naver.maps.Event.addListener(marker, "click", () => {
+            if (activeInfoWindow) {
+                activeInfoWindow.close();
             }
-            document.addEventListener('DOMContentLoaded', () => {
-                const defaultCenter = new naver.maps.LatLng(36.0, 127.5);
-                const map = new naver.maps.Map('map', {
-                    center: defaultCenter,
-                    zoom: 7
-                });
-                if (!Array.isArray(data)) {
-                    console.error('잘못된 데이터 형식:', data);
-                    return;
-                }
-                console.log(data);
-                data.forEach((item, index) => {
-                    const lat = parseFloat(item.mapy);
-                    const lng = parseFloat(item.mapx);
-                    if (isNaN(lat) || isNaN(lng)) {
-                        console.warn(`유효하지 않은 좌표: ${
-                            item.title
-                        }`);
-                        return;
+
+            infowindow.open(map, marker);
+            activeInfoWindow = infowindow;
+
+            adjustMapCenter(map, position, infowindow);
+
+            setTimeout(() => drawChart(`activation-chart-${index}`, activationRaw), 100);
+        });
+    });
+
+    // InfoWindow 닫기 함수
+    window.closeActiveInfoWindow = () => {
+        if (activeInfoWindow) {
+            activeInfoWindow.close();
+            activeInfoWindow = null;
+        }
+    };
+
+    // InfoWindow가 화면 안에 포함되도록 지도 중심 조정
+    function adjustMapCenter(map, position, infowindow) {
+        const mapBounds = map.getBounds(); // 지도 경계
+        const infoSize = { width: 400, height: 550 }; // InfoWindow 크기
+        const projection = map.getProjection();
+
+        const markerPixel = projection.fromCoordToOffset(position);
+        const newPixel = new naver.maps.Point(
+            markerPixel.x,
+            markerPixel.y - infoSize.height / 2 // InfoWindow 높이를 고려
+        );
+
+        const newCenter = projection.fromOffsetToCoord(newPixel);
+
+        if (!mapBounds.hasLatLng(newCenter)) {
+            map.setCenter(newCenter); // 새로운 중심으로 이동
+        }
+    }
+
+    // 도넛 차트를 그리는 함수
+    function drawChart(canvasId, value) {
+        const ctx = document.getElementById(canvasId).getContext('2d');
+        const isPositive = value >= 0;
+        const percentage = Math.abs(value);
+
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                datasets: [
+                    {
+                        data: [percentage, 100 - percentage],
+                        backgroundColor: [isPositive ? 'blue' : 'red', '#e0e0e0'],
+                        borderWidth: 0
                     }
-                    const position = new naver.maps.LatLng(lat, lng);
-                    const marker = new naver.maps.Marker({map: map, position: position, title: item.title});
-                    const formattedStartDate = formatDate(item.eventstartdate);
-                    const formattedEndDate = formatDate(item.eventenddate);
-                    const activationRaw = parseFloat(item.activation_rate) || 0;
-                    const visitorPrediction = item.nextYearVisitors || 'N/A';
-                    const contentString = `
-                        <div class="info-window">
-                            <div class="info-title">${
-                                item.title
-                            }</div>
-                            <div class="image-section">
-                            <img src="${item.firstimage}" alt="${item.title} 사진">
-                            </div>
-                            <div class="data-row">
-                                <div class="info-block">
-                                    <div class="info-section-title">위치</div>
-                                    <div>${
-                                item.addr1 || '위치 정보 없음'
-                            }</div>
-                                </div>
-                                <div class="info-block">
-                                    <div class="info-section-title">축제일정</div>
-                                    <div>${formattedStartDate} ~ ${formattedEndDate}</div>
-                                </div>
-                            </div>
-                            <div class="data-row">
-                                <div class="info-block center-content">
-                                    <div class="info-section-title">지역 활성화 정도</div>
-                                    <canvas id="activation-chart-${index}" width="100" height="100"></canvas>
-                                </div>
-                                <div class="info-block center-content">
-                                    <div class="info-section-title">방문자 수 예측</div>
-                                    <div>${visitorPrediction}</div>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                    const infowindow = new naver.maps.InfoWindow(
-                        {
-                            content: contentString, anchorSkew: true, // 말풍선을 마커 중심에 맞춤
-                            pixelOffset: new naver.maps.Point(0, 0) // 말풍선을 마커 위로 이동
-                        }
-                    );
-                    naver
-                        .maps
-                        .Event
-                        .addListener(marker, "click", () => {
-                            if (infowindow.getMap()) {
-                                infowindow.close();
-                            } else {
-                                infowindow.open(map, marker);
-
-                                // InfoWindow가 화면 밖으로 넘어가지 않도록 지도 중심 이동
-                                adjustMapCenter(map, position, infowindow);
-
-                                // 차트 그리기
-                                setTimeout(() => drawChart(`activation-chart-${index}`, activationRaw), 100);
-                            }
-                        });
-                });
-
-                /**
-                 * InfoWindow가 화면 안에 포함되도록 지도 중심 조정
-                 * @param {object} map - Naver Map 객체
-                 * @param {object} position - 마커 위치
-                 * @param {object} infowindow - InfoWindow 객체
-                 */
-                function adjustMapCenter(map, position, infowindow) {
-                    const mapSize = map.getSize(); // 지도의 크기
-                    const infoSize = { width: 400, height: 300 }; // InfoWindow 예상 크기 (CSS에서 설정한 크기와 동일해야 함)
-                    const projection = map.getProjection(); // 지도 좌표 변환 도구
-
-                    const infoOffset = new naver.maps.Point(0, -(infoSize.height / 2)); // InfoWindow 중심 보정
-                    const markerPixel = projection.fromCoordToOffset(position); // 마커의 픽셀 좌표
-                    const adjustedPixel = new naver.maps.Point(
-                        markerPixel.x - infoOffset.x,
-                        markerPixel.y - infoOffset.y -400
-                    );
-
-                    // 새로운 지도 중심 계산
-                    const newCenter = projection.fromOffsetToCoord(adjustedPixel);
-                    map.setCenter(newCenter); // 지도 중심 이동
+                ]
+            },
+            options: {
+                responsive: false,
+                cutout: '70%',
+                plugins: {
+                    tooltip: { enabled: false },
+                    legend: { display: false },
+                    centerText: { display: true, text: `${value}%` }
                 }
+            },
+            plugins: [
+                {
+                    id: 'centerText',
+                    beforeDraw(chart) {
+                        const { width, height, ctx } = chart;
+                        const text = chart.options.plugins.centerText.text;
 
-                /**
-                 * 도넛 차트를 그리는 함수 
-                 * @param {string} canvasId - 캔버스 ID 
-                 * @param {number} value - 활성화 정도 값
-                */
-                function drawChart(canvasId, value) {
-                    const ctx = document.getElementById(canvasId).getContext('2d');
-                    const isPositive = value >= 0;
-                    const percentage = Math.abs(value);
-                    new Chart(ctx, {
-                        type: 'doughnut',
-                        data: {
-                            datasets: [
-                                {
-                                    data: [
-                                        percentage,
-                                        100 - percentage
-                                    ],
-                                    backgroundColor: [
-                                        isPositive
-                                            ? 'blue'
-                                            : 'red',
-                                        '#e0e0e0'
-                                    ],
-                                    borderWidth: 0
-                                }
-                            ]
-                        },
-                        options: {
-                            responsive: false,
-                            cutout: '70%', // 도넛 차트 중심 부분 비움
-                            plugins: {
-                                tooltip: {
-                                    enabled: false
-                                }, // 툴팁 비활성화
-                                legend: {
-                                    display: false
-                                }, // 범례 비활성화 중앙 텍스트 표시를 위한 커스텀 플러그인
-                                centerText: {
-                                    display: true,
-                                    text: `${value}%`
-                                }
-                            }
-                        },
-                        plugins: [
-                            {
-                                id: 'centerText',
-                                beforeDraw(chart) {
-                                    const {width} = chart;
-                                    const {height} = chart;
-                                    const ctx = chart.ctx;
-                                    const text = chart
-                                        .options
-                                        .plugins
-                                        .centerText
-                                        .text;
-                                    ctx.save();
-                                    ctx.font = '16px Arial'; // 텍스트 크기와 폰트 설정
-                                    ctx.textAlign = 'center';
-                                    ctx.textBaseline = 'middle';
-                                    ctx.fillStyle = 'black'; // 텍스트 색상 설정
-                                    ctx.fillText(text, width / 2, height / 2); // 중앙 텍스트 출력
-                                    ctx.restore();
-                                }
-                            }
-                        ]
-                    });
+                        ctx.save();
+                        ctx.font = '16px Arial';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.fillStyle = 'black';
+                        ctx.fillText(text, width / 2, height / 2);
+                        ctx.restore();
+                    }
                 }
-            });
+            ]
+        });
+    }
+});
+
         </script>
     </body>
 </html>
