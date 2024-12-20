@@ -78,8 +78,7 @@ Regional-Festival-Impact-Analyzer
   - `results`: 지역 활성화 정도 분석 결과 (609개)
   - `predicted_visitors`: 미래 방문자 예측 데이터 (330,870개, 2024-11-17 ~ 2025-12-31)
 
-- **데이터 형식**: `data` 폴더 내 CSV 파일 형태  
-  데이터 삽입 시 `ObjectId` 중복 에러가 발생할 수 있으나, 모든 데이터(약 517,046개)가 정상 삽입되었다면 문제가 없습니다.
+- **데이터 형식**: JSON 형태
 
 ## 사용 API (공공 데이터)
 1. **한국관광공사 국문 관광정보 서비스**: 지역별 행사정보목록 조회 (REST, JSON)
@@ -94,19 +93,18 @@ Regional-Festival-Impact-Analyzer
    VISITOR_API_URL=...
 2. **데이터 삽입**
    `data` 폴더 내 다음 CSV 파일을 MongoDB에 삽입합니다:
-   - `mydatabase.events.csv`: 축제 데이터 (609개, 대표 이미지 포함)
-   - `mydatabase.visitors.csv`: 방문자 데이터 (517,046개, 시/군/구별 방문객 정보, 2023~2024년)
-   - `mydatabase.results.csv`: 지역 활성화 정도 분석 결과 데이터 (609개)
-   - `mydatabase.predicted_visitors.csv`: 내년 방문자 예측 데이터 (330,870개, 2024-11-17 ~ 2025-12-31)
+   - `mydatabase.events`: 축제 데이터 (609개, 대표 이미지 포함)
+   - `mydatabase.visitors`: 방문자 데이터 (517,046개, 시/군/구별 방문객 정보, 2023~2024년)
+   - `mydatabase.results`: 지역 활성화 정도 분석 결과 데이터 (609개)
+   - `mydatabase.predicted_visitors`: 내년 방문자 예측 데이터 (330,870개, 2024-11-17 ~ 2025-12-31)
 
    **삽입 방법**:
    1. MongoDB 데이터베이스를 설정한 후, 각 CSV 파일을 삽입합니다.
-   2. `mydatabase.visitors.csv` 데이터 삽입 시, 데이터 크기와 `ObjectId` 중복으로 인해 에러가 발생할 수 있습니다.  
-      - 에러가 발생해도 총 517,046개의 데이터가 삽입되었는지 확인 후 문제 없다면 무시 가능합니다.
 
    **주의사항**:
    - `VISITOR_API_URL`을 통해 호출하여 삽입 시, 일부 데이터의 시/군/구 코드(signguCode)와 명칭 간 불일치 문제가 있습니다.  
      이를 해결하기 위해 별도로 매핑 과정을 수행하였습니다.
    - `Activation_Rate.py`을 통해 생성한 `results` 컬렉션은 불완전하며, 일부 데이터를 직접 수정하였습니다.  
      예: 축제명에 작은따옴표(`'`)가 포함된 경우 JSON 변환 에러가 발생하여 수정 완료.
-   - 위와 같은 이유로 프로젝트 실행에 필요한 정확한 데이터는 첨부된 CSV 파일을 바로 삽입하는 것을 권장합니다.
+   - 위와 같은 이유로 프로젝트 실행에 필요한 정확한 데이터는 **첨부된 CSV 파일을 바로 삽입하는 것을 권장**합니다.
+   - `mydatabase.visitors.csv` 데이터 삽입 시 `ObjectId` 중복 에러가 발생할 수 있으나, 모든 데이터(약 517,046개)가 정상 삽입되었다면 문제가 없습니다.
