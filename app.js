@@ -58,6 +58,18 @@ app.get('/', async (req, res) => {
   }
 });
 
+// 축제 데이터 업데이트 요청 시 실행
+app.get('/updateEvents', async (req, res) => {
+  await fetchEventDataAndStore();
+  res.send('축제 데이터 업데이트 완료!');
+});
+
+// 방문자 데이터 업데이트 요청 시 실행
+app.get('/updateVisitors', async (req, res) => {
+  await fetchVisitorDataAndStore();
+  res.send('방문자 수 데이터 업데이트 완료!');
+});
+
 // 404 처리 미들웨어: 등록되지 않은 라우트로 요청 시 에러 처리
 app.use((req, res, next) => {
   const error = new Error(`${req.method} ${req.url} 라우터가 존재하지 않습니다.`);
