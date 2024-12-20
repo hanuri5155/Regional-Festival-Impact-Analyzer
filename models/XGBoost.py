@@ -4,7 +4,6 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import RandomizedSearchCV
-from sklearn.preprocessing import StandardScaler
 import holidays
 from xgboost import XGBRegressor
 import logging
@@ -27,6 +26,7 @@ logger.info(f"방문자 데이터 로드 완료! 데이터 개수: {len(visitors
 logger.info("이벤트 데이터를 MongoDB에서 로드 중...")
 events = pd.DataFrame(list(db.events.find()))
 logger.info(f"이벤트 데이터 로드 완료! 데이터 개수: {len(events)}")
+
 
 # 날짜 형식 변환: 'YYYYMMDD' 형태를 실제 날짜 타입으로 변환하여 시간 관련 특징 추출 가능하도록 함
 logger.info("날짜 형식을 변환 중...")
@@ -83,6 +83,7 @@ visitors['rolling_mean_7'] = visitors.groupby('signguCode')['touNum'].shift(1).r
 visitors['lag_3'] = visitors.groupby('signguCode')['touNum'].shift(3)
 visitors['rolling_std_7'] = visitors.groupby('signguCode')['touNum'].shift(1).rolling(window=7).std()
 logger.info("Lag 특징 생성 완료!")
+
 
 # 결측치 처리: lag나 rolling 계산에서 생기는 NaN을 0으로 대체
 logger.info("결측치를 처리 중...")
