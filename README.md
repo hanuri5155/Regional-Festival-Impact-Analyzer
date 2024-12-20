@@ -93,9 +93,9 @@ Regional-Festival-Impact-Analyzer
    VISITOR_API_URL=...
 2. **데이터 삽입**
    `data` 폴더 내 다음 CSV 파일을 MongoDB에 삽입합니다:
-   - `mydatabase.events`: 축제 데이터 (609개, 대표 이미지 포함)
+   - `mydatabase.events`: 축제 데이터 (678개, 대표 이미지 포함)
    - `mydatabase.visitors`: 방문자 데이터 (517,046개, 시/군/구별 방문객 정보, 2023~2024년)
-   - `mydatabase.results`: 지역 활성화 정도 분석 결과 데이터 (609개)
+   - `mydatabase.results`: 지역 활성화 정도 분석 결과 데이터 (609개, 해당 축제 일정동안 방문자 데이터 부족으로 인한 항목 제외됨)
    - `mydatabase.predicted_visitors`: 내년 방문자 예측 데이터 (330,870개, 2024-11-17 ~ 2025-12-31)
 
    **삽입 방법**:
