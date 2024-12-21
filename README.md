@@ -39,7 +39,6 @@ packaging           24.2
 pandas              2.2.3
 pillow              11.0.0
 pip                 24.3.1
-prophet             1.1.6
 pymongo             4.10.1
 pyparsing           3.2.0
 python-dateutil     2.9.0.post0
